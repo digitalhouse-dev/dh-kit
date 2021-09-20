@@ -10,7 +10,7 @@ import (
 
 type SuccessResponse struct {
 	Message string           `json:"message"`
-	Code    int              `json:"code"`
+	Status  int              `json:"status"`
 	Data    interface{}      `json:"data"`
 	Meta    *meta.Meta       `json:"meta,omitempty"`
 	Headers *headers.Headers `json:"-"`
@@ -30,7 +30,7 @@ func Success(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) 
 	}
 	return &SuccessResponse{
 		Message: msg,
-		Code:    http.StatusOK,
+		Status:  http.StatusOK,
 		Data:    data,
 		Meta:    meta,
 		Headers: h,
@@ -42,7 +42,7 @@ func (s *SuccessResponse) Error() string {
 }
 
 func (s *SuccessResponse) StatusCode() int {
-	return s.Code
+	return s.Status
 }
 
 func (s *SuccessResponse) GetBody() ([]byte, error) {
