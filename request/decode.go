@@ -27,8 +27,42 @@ func setField(obj interface{}, name string, value string) error {
 	ft := fv.Type()
 	val := reflect.ValueOf(value)
 
+	if fv.Kind() == reflect.Ptr {
+		ft = ft.Elem()
+		if ft.Kind() == reflect.Int {
+			i, err := strconv.Atoi(value)
+			if err != nil {
+				return response.BadRequest("")
+			}
+			val = reflect.ValueOf(&i)
+			fv.Set(val)
+			return nil
+		}
+
+		if ft.Kind() == reflect.Bool {
+			i, err := strconv.ParseBool(value)
+			if err != nil {
+				return response.BadRequest("")
+			}
+			val = reflect.ValueOf(&i)
+			fv.Set(val)
+			return nil
+		}
+		return nil
+	}
+
 	if fv.Kind() == reflect.Int {
 		i, err := strconv.Atoi(value)
+		if err != nil {
+			return response.BadRequest("")
+		}
+		val = reflect.ValueOf(i)
+		fv.Set(val)
+		return nil
+	}
+
+	if fv.Kind() == reflect.Bool {
+		i, err := strconv.ParseBool(value)
 		if err != nil {
 			return response.BadRequest("")
 		}
