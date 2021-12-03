@@ -1,9 +1,10 @@
 package response
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestErrorResponse_Error(t *testing.T) {
@@ -63,8 +64,8 @@ func TestBadRequest(t *testing.T) {
 func TestResponseInvalidInput(t *testing.T) {
 
 	type testStruct struct {
-		value1	string
-		value2  int
+		value1 string
+		value2 int
 	}
 	s := testStruct{"TestResponseInvalidInput unittest", 31}
 
@@ -80,11 +81,3 @@ func TestResponseInvalidInput(t *testing.T) {
 	assert.NotEmpty(t, res.Error())
 	assert.Nil(t, res.GetData())
 }
-// func TestInvalidInput(t *testing.T) {
-// 	err := InvalidInput(validation.Errors{
-// 		"xyz": fmt.Errorf("2"),
-// 		"abc": fmt.Errorf("1"),
-// 	})
-// 	assert.Equal(t, http.StatusBadRequest, err.Status)
-// 	assert.Equal(t, []invalidField{{"abc", "1"}, {"xyz", "2"}}, err.Details)
-// }

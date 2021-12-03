@@ -88,7 +88,7 @@ func NoContent(msg string, data interface{}, meta *meta.Meta, h *headers.Headers
 // And the h parameter specifies the headers.
 func ResetContent(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
 	if msg == "" {
-		msg = "Non-Authoritative Information request."
+		msg = "Reset Content request."
 	}
 
 	return success(msg, data, meta, h, http.StatusResetContent)

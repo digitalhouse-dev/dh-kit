@@ -1,0 +1,20 @@
+on: [push, pull_request]
+name: Test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+     steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Build
+        run: go build -v ./...
+    
+      - name: Test
+        run: go test -v ./...
