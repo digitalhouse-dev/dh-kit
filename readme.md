@@ -24,7 +24,7 @@ mock := logger.GetMock() // get mocks
 fmt.Println(mock) 
 logger.StopMock()
 
-// with debus
+// with debug
 log = logger.New(logger.SentryOption{Dsn: "a"}, logger.LogOption{Debug: true})
 log.CatchMessage("mi mensaje")
 log.DebugMessage("mi debug del mensaje") // only in logger.LogOption
