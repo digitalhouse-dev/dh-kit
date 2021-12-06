@@ -16,21 +16,105 @@ type SuccessResponse struct {
 	Headers *headers.Headers `json:"-"`
 }
 
-// Success creates a new SuccessResponse instance.
+// OK creates a new SuccessResponse instance.
 // The message parameter refers to the message that will be use in the response body.
 // The data parameter refers to the data key in the response body.
 // The meta parameter refers to the meta key used in the response body.
 // And the h parameter specifies the headers.
-func Success(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
-	if h == nil {
-		h = headers.New()
-	}
+func OK(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
 	if msg == "" {
 		msg = "Success request."
 	}
+
+	return success(msg, data, meta, h, http.StatusOK)
+}
+
+// Created creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func Created(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "Created request."
+	}
+
+	return success(msg, data, meta, h, http.StatusCreated)
+}
+
+// Accepted creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func Accepted(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "Accepted request."
+	}
+
+	return success(msg, data, meta, h, http.StatusAccepted)
+}
+
+// NonAuthoritativeInfo creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func NonAuthoritativeInfo(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "Non-Authoritative Information request."
+	}
+
+	return success(msg, data, meta, h, http.StatusNonAuthoritativeInfo)
+}
+
+// NoContent creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func NoContent(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "No Content request."
+	}
+
+	return success(msg, data, meta, h, http.StatusNoContent)
+}
+
+// ResetContent creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func ResetContent(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "Reset Content request."
+	}
+
+	return success(msg, data, meta, h, http.StatusResetContent)
+}
+
+// PartialContent creates a new SuccessResponse instance.
+// The message parameter refers to the message that will be use in the response body.
+// The data parameter refers to the data key in the response body.
+// The meta parameter refers to the meta key used in the response body.
+// And the h parameter specifies the headers.
+func PartialContent(msg string, data interface{}, meta *meta.Meta, h *headers.Headers) Response {
+	if msg == "" {
+		msg = "Partial Content request."
+	}
+
+	return success(msg, data, meta, h, http.StatusPartialContent)
+}
+
+func success(msg string, data interface{}, meta *meta.Meta, h *headers.Headers, code int) Response {
+	if h == nil {
+		h = headers.New()
+	}
+
 	return &SuccessResponse{
 		Message: msg,
-		Status:  http.StatusOK,
+		Status:  code,
 		Data:    data,
 		Meta:    meta,
 		Headers: h,
