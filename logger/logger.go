@@ -2,6 +2,7 @@ package logger
 
 import (
 	logS "log"
+	"os"
 	"reflect"
 	"time"
 
@@ -22,7 +23,8 @@ type SentryOption struct {
 }
 
 type LogOption struct {
-	Debug bool
+	Debug  bool
+	Logger *logS.Logger
 }
 
 type Logger interface {
@@ -36,7 +38,6 @@ type log struct {
 }
 
 func New(loggers ...interface{}) Logger {
-	logS.SetFlags(logS.LstdFlags | logS.Lshortfile)
 	l := log{}
 	for _, ls := range loggers {
 		l.add(ls)
@@ -98,7 +99,11 @@ func (l *log) add(log interface{}) {
 		defer sentry.Flush(so.FlushTime)
 	case logOption:
 		lo := log.(LogOption)
-		l.logs = append(l.logs, &logLogger{nil, lo.Debug})
+
+		if lo.Logger == nil {
+			lo.Logger = logS.New(os.Stdout, "", logS.LstdFlags|logS.Lshortfile)
+		}
+		l.logs = append(l.logs, &logLogger{nil, lo.Debug, lo.Logger})
 
 	}
 }
@@ -137,34 +142,35 @@ func (sl *sentryLogger) DebugError(err error) error {
 }
 
 type logLogger struct {
-	err   error
-	debug bool
+	err    error
+	debug  bool
+	logger *logS.Logger
 }
 
 func (sl *logLogger) CatchMessage(msg string) string {
 	if msg != "" {
-		logS.Output(3, msg)
+		sl.logger.Output(3, msg)
 	}
 	return msg
 }
 
 func (sl *logLogger) CatchError(err error) error {
 	if err != nil {
-		logS.Output(3, err.Error())
+		sl.logger.Output(3, err.Error())
 	}
 	return err
 }
 
 func (sl *logLogger) DebugMessage(msg string) string {
 	if msg != "" && sl.debug {
-		logS.Output(3, msg)
+		sl.logger.Output(3, msg)
 	}
 	return msg
 }
 
 func (sl *logLogger) DebugError(err error) error {
 	if err != nil && sl.debug {
-		logS.Output(3, err.Error())
+		sl.logger.Output(3, err.Error())
 	}
 	return err
 }
