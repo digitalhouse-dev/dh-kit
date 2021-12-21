@@ -1,30 +1,31 @@
 package logger
 
 import (
-	"github.com/getsentry/sentry-go"
 	logS "log"
 	"reflect"
 	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 const (
 	sentryOption = "SentryOption"
-	logOption = "LogOption"
+	logOption    = "LogOption"
 )
 
-type SentryOption struct{
-	Dsn 		string
+type SentryOption struct {
+	Dsn         string
 	Environment string
-	Release 	string
+	Release     string
 	FlushTime   time.Duration
-	Debug		bool
+	Debug       bool
 }
 
-type LogOption struct{
-	Debug		bool
+type LogOption struct {
+	Debug bool
 }
 
-type Logger interface{
+type Logger interface {
 	CatchMessage(msg string) string
 	CatchError(err error) error
 	DebugMessage(msg string) string
@@ -34,7 +35,8 @@ type log struct {
 	logs []Logger
 }
 
-func New(loggers ...interface{}) Logger{
+func New(loggers ...interface{}) Logger {
+	logS.SetFlags(logS.LstdFlags | logS.Lshortfile)
 	l := log{}
 	for _, ls := range loggers {
 		l.add(ls)
@@ -43,7 +45,7 @@ func New(loggers ...interface{}) Logger{
 }
 
 func (l *log) CatchMessage(msg string) string {
-	for _, log := range l.logs{
+	for _, log := range l.logs {
 		log.CatchMessage(msg)
 	}
 
@@ -55,7 +57,7 @@ func (l *log) CatchMessage(msg string) string {
 }
 
 func (l *log) CatchError(msg error) error {
-	for _, log := range l.logs{
+	for _, log := range l.logs {
 		_ = log.CatchError(msg)
 	}
 
@@ -66,7 +68,7 @@ func (l *log) CatchError(msg error) error {
 }
 
 func (l *log) DebugMessage(msg string) string {
-	for _, log := range l.logs{
+	for _, log := range l.logs {
 		log.DebugMessage(msg)
 	}
 
@@ -74,7 +76,7 @@ func (l *log) DebugMessage(msg string) string {
 }
 
 func (l *log) DebugError(msg error) error {
-	for _, log := range l.logs{
+	for _, log := range l.logs {
 		_ = log.DebugError(msg)
 	}
 	return msg
@@ -102,11 +104,11 @@ func (l *log) add(log interface{}) {
 }
 
 type sentryLogger struct {
-	err error
+	err   error
 	debug bool
 }
 
-func (sl *sentryLogger) CatchMessage(msg string) string{
+func (sl *sentryLogger) CatchMessage(msg string) string {
 	if msg != "" {
 		sentry.CaptureMessage(msg)
 	}
@@ -120,7 +122,7 @@ func (sl *sentryLogger) CatchError(err error) error {
 	return err
 }
 
-func (sl *sentryLogger) DebugMessage(msg string) string{
+func (sl *sentryLogger) DebugMessage(msg string) string {
 	if msg != "" && sl.debug {
 		sentry.CaptureMessage(msg)
 	}
@@ -135,34 +137,34 @@ func (sl *sentryLogger) DebugError(err error) error {
 }
 
 type logLogger struct {
-	err error
+	err   error
 	debug bool
 }
 
-func (sl *logLogger) CatchMessage(msg string) string{
+func (sl *logLogger) CatchMessage(msg string) string {
 	if msg != "" {
-		logS.Println(msg)
+		logS.Output(3, msg)
 	}
 	return msg
 }
 
-func (sl *logLogger) CatchError(err error) error{
+func (sl *logLogger) CatchError(err error) error {
 	if err != nil {
-		logS.Println(err.Error())
+		logS.Output(3, err.Error())
 	}
 	return err
 }
 
-func (sl *logLogger) DebugMessage(msg string) string{
+func (sl *logLogger) DebugMessage(msg string) string {
 	if msg != "" && sl.debug {
-		logS.Println(msg)
+		logS.Output(3, msg)
 	}
 	return msg
 }
 
-func (sl *logLogger) DebugError(err error) error{
+func (sl *logLogger) DebugError(err error) error {
 	if err != nil && sl.debug {
-		logS.Println(err.Error())
+		logS.Output(3, err.Error())
 	}
 	return err
 }
