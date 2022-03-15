@@ -17,10 +17,11 @@ var (
 
 // Meta object
 type Meta struct {
-	Page       int `json:"page"`
-	PerPage    int `json:"per_page"`
-	PageCount  int `json:"page_count"`
-	TotalCount int `json:"total_count"`
+	Page       *int    `json:"page,omitempty"`
+	PerPage    *int    `json:"per_page,omitempty"`
+	PageCount  *int    `json:"page_count,omitempty"`
+	TotalCount *int    `json:"total_count,omitempty"`
+	NextCursor *string `json:"next_cursor,omitempty"`
 }
 
 // New creates a new Meta instance.
@@ -47,16 +48,22 @@ func New(page, perPage, total int) *Meta {
 	}
 
 	return &Meta{
-		Page:       page,
-		PerPage:    perPage,
-		TotalCount: total,
-		PageCount:  pageCount,
+		Page:       &page,
+		PerPage:    &perPage,
+		TotalCount: &total,
+		PageCount:  &pageCount,
 	}
 }
 
-// NewFormMap creates a Meta object using the query parameters found in the given map.
+func NewCursorBased(nextCursor string) *Meta {
+	return &Meta{
+		NextCursor: &nextCursor,
+	}
+}
+
+// NewFromMap creates a Meta object using the query parameters found in the given map.
 // count stands for the total number of items. Use -1 if this is unknown.
-func NewFormMap(req map[string]string, count int) *Meta {
+func NewFromMap(req map[string]string, count int) *Meta {
 	page := parseInt(req[PageVar], 1)
 	perPage := parseInt(req[PageSizeVar], DefaultPageSize)
 	return New(page, perPage, count)
@@ -75,10 +82,16 @@ func parseInt(value string, defaultValue int) int {
 
 // Offset returns the OFFSET value that can be used in a SQL statement.
 func (p *Meta) Offset() int {
-	return (p.Page - 1) * p.PerPage
+	if p.PerPage != nil && p.Page != nil {
+		return (*p.Page - 1) * *p.PerPage
+	}
+	return 0
 }
 
 // Limit returns the LIMIT value that can be used in a SQL statement.
 func (p *Meta) Limit() int {
-	return p.PerPage
+	if p.PerPage != nil {
+		return *p.PerPage
+	}
+	return 0
 }

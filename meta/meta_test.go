@@ -41,6 +41,18 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestNewCursorBased(t *testing.T) {
+	cursor := "1647012746236826257"
+	p := NewCursorBased(cursor)
+	assert.Equal(t, cursor, *p.NextCursor)
+	assert.Nil(t, p.Page)
+	assert.Nil(t, p.PageCount)
+	assert.Nil(t, p.PerPage)
+	assert.Nil(t, p.TotalCount)
+	assert.Zero(t, p.Offset())
+	assert.Zero(t, p.Limit())
+}
+
 func Test_parseInt(t *testing.T) {
 	type args struct {
 		value        string
@@ -68,7 +80,7 @@ func TestNewFormMapt(t *testing.T) {
 	req := make(map[string]string)
 	req["page"] = "2"
 	req["limit"] = "20"
-	p := NewFormMap(req, 100)
+	p := NewFromMap(req, 100)
 	assert.Equal(t, 2, p.Page)
 	assert.Equal(t, 20, p.PerPage)
 	assert.Equal(t, 100, p.TotalCount)
